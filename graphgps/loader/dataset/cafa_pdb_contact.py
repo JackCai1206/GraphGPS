@@ -4,12 +4,13 @@ import torch
 
 from biotoolbox.contact_map_builder import ContactMapContainer
 
-def contact2graph(contact: torch.Tensor, node_feat) -> Data:
-    assert contact.shape[0] == node_feat.shape[0]
+def contact2graph(contact: ContactMapContainer, node_feats) -> Data:
+    assert contact.shape[0] == node_feats.shape[0]
     graph = Data()
-    graph.edge_index = torch.nonzero(contact).t()
+    adj = torch.Tensor(contact.chains[0]['contact-map']) # (N, N)
+    graph.edge_index = adj.nonzero().T # (2, E)
     graph.edge_attr = None # no edge features for now
-    graph.x = node_feat
+    graph.x = node_feats
     graph.y = None # TODO: add labels
     return graph
 
