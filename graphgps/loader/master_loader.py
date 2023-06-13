@@ -18,6 +18,7 @@ from graphgps.loader.dataset.aqsol_molecules import AQSOL
 from graphgps.loader.dataset.coco_superpixels import COCOSuperpixels
 from graphgps.loader.dataset.malnet_tiny import MalNetTiny
 from graphgps.loader.dataset.voc_superpixels import VOCSuperpixels
+from graphgps.loader.dataset.cafa_pdb_contact import CAFA5PDBDataset
 from graphgps.loader.split_generator import (prepare_splits,
                                              set_dataset_splits)
 from graphgps.transform.posenc_stats import compute_posenc_stats
@@ -141,6 +142,9 @@ def load_dataset_master(format, name, dataset_dir):
             dataset = preformat_COCOSuperpixels(dataset_dir, name,
                                                 cfg.dataset.slic_compactness)
 
+        elif pyg_dataset_id == 'CAFA5':
+            dataset_dir = osp.split(dataset_dir)[0]
+            dataset = CAFA5PDBDataset(dataset_dir, name)
         else:
             raise ValueError(f"Unexpected PyG Dataset identifier: {format}")
 

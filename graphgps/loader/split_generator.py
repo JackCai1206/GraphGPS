@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import random
 
 import numpy as np
 from sklearn.model_selection import KFold, StratifiedKFold, ShuffleSplit
@@ -27,6 +28,8 @@ def prepare_splits(dataset):
         setup_fixed_split(dataset)
     elif split_mode == "sliced":
         setup_sliced_split(dataset)
+    elif split_mode == "random_sliced":
+        setup_random_sliced_split(dataset)
     else:
         raise ValueError(f"Unknown split mode: {split_mode}")
 
@@ -130,6 +133,36 @@ def setup_random_split(dataset):
     )
     val_index = val_test_index[val_index]
     test_index = val_test_index[test_index]
+
+    set_dataset_splits(dataset, [train_index, val_index, test_index])
+
+def setup_random_sliced_split(dataset):
+    """Generate random splits.
+
+    Generate random train/val/test based on the ratios defined in the config
+    file.
+
+    Raises:
+        ValueError: If the number split ratios is not equal to 3, or the ratios
+            do not sum up to 1.
+    """
+    split_ratios = cfg.dataset.split
+
+    if len(split_ratios) != 3:
+        raise ValueError(
+            f"Three split ratios is expected for train/val/test, received "
+            f"{len(split_ratios)} split ratios: {repr(split_ratios)}")
+    elif sum(split_ratios) != 1 and sum(split_ratios) != len(dataset):
+        raise ValueError(
+            f"The train/val/test split ratios must sum up to 1/length of the dataset, input ratios "
+            f"sum up to {sum(split_ratios):.2f} instead: {repr(split_ratios)}")
+
+    len_data = len(dataset.slices['y']) - 1
+    random_index = list(range(len_data))
+    random.shuffle(random_index)
+    train_slice = int(split_ratios[0] * len_data)
+    val_slice = int(split_ratios[1] * len_data)
+    train_index, val_index, test_index = random_index[:train_slice], random_index[train_slice:train_slice+val_slice], random_index[train_slice+val_slice:]
 
     set_dataset_splits(dataset, [train_index, val_index, test_index])
 
