@@ -1,18 +1,20 @@
 out_dir: results
-metric_best: mae
-metric_agg: argmin
+metric_best: auc
+metric_agg: argmax
 wandb:
   use: False
   project: UW-Badgers-CAFA5
   entity: jackcai1206
 share:
   num_splits: 3
+  dim_out: 200
 dataset:
   format: PyG-CAFA5
   name: CAFA5
   dir: ./data
   task: graph
   task_type: classification_multilabel
+  max_classes: 200
   transductive: False
   node_encoder: False
   # node_encoder_name: 
@@ -40,11 +42,11 @@ train:
   ckpt_period: 100
 model:
   type: GPSModel
-  loss_fun: l1
+  loss_fun: cross_entropy
   edge_decoding: dot
   graph_pooling: add
 gt:
-  layer_type: GINE+Transformer  # CustomGatedGCN+Performer
+  layer_type: GIN+Transformer  # CustomGatedGCN+Performer
   layers: 10
   n_heads: 4
   dim_hidden: 64  # `gt.dim_hidden` must match `gnn.dim_inner`

@@ -144,7 +144,7 @@ def load_dataset_master(format, name, dataset_dir):
 
         elif pyg_dataset_id == 'CAFA5':
             dataset_dir = osp.split(dataset_dir)[0]
-            dataset = CAFA5PDBDataset(dataset_dir, name)
+            dataset = CAFA5PDBDataset(dataset_dir, name, max_classes=cfg.dataset.max_classes)
         else:
             raise ValueError(f"Unexpected PyG Dataset identifier: {format}")
 
